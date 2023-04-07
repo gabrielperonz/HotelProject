@@ -64,35 +64,32 @@ public class Reserva {
     }
 
     public void criarReserva() {
-        System.out.println("Para quem será essa reserva?");
+        System.out.println("Digite o ID da pessoa que fará a reserva: ");
+
         try {
-            Statement stmt = c.createStatement();
-            String sql = "SELECT nomePessoa FROM pessoa";
+            String sql = "SELECT id, nomePessoa FROM pessoa";
+            Statement stmt = c.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             ResultSet rs = stmt.executeQuery(sql);
+
             int i = 1;
             while (rs.next()) {
-                String info1 = rs.getString("nomePessoa");
-                System.out.println(i + ". " + info1);
+                String pessoa = rs.getString("nomePessoa");
+                int id = rs.getInt("id");
+                System.out.println(i + ". " + pessoa + " (ID: " + id + ")");
                 i++;
             }
-            System.out.print("Digite o nome da opção desejada: ");
-            String nome = scanner.nextLine();
-            try {
-                String sqlverificar = "SELECT * FROM pessoa WHERE nomePessoa = ?";
-                PreparedStatement verificar = c.prepareStatement(sqlverificar);
-                verificar.setString(1, nome);
-                ResultSet rsverificar = verificar.executeQuery();
-                if (!rsverificar.next()) {
-                    System.out.println("Esse nome não está registrado.");
-                    System.exit(0);
-                } else {
-                    hospede.setNomeHospede(nome);
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("");
+            int option = scanner.nextInt() - 1;
+            rs.absolute(option + 1);
+
+            String pessoaSelecionada = rs.getString("nomePessoa");
+            hospede.setNome(pessoaSelecionada);
+            System.out.println("Você selecionou: " + pessoaSelecionada);
+
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println("Erro ao conectar ao banco de dados: " + e.getMessage());
         }
 
         System.out.println("Digite a data da reserva no formato dd-MM-yyyy:");
@@ -172,7 +169,7 @@ public class Reserva {
         }
         try {
             PreparedStatement stmt = c.prepareStatement("INSERT INTO database.hospede (nomeHospede, dataReserva, tipoQuarto, tipoCama, garagem, aceitaAnimais) VALUE (?, ?, ?, ?, ?, ?)");
-            stmt.setString(1, hospede.getNomeHospede());
+            stmt.setString(1, hospede.getNome());
             stmt.setString(2, hospede.getData());
             stmt.setString(3, quarto.getTipoQuarto());
             stmt.setString(4, quarto.getTipoCama());
@@ -180,7 +177,7 @@ public class Reserva {
             stmt.setBoolean(6, quarto.isAceitaAnimais());
             int linhas = stmt.executeUpdate();
             if (linhas > 0) {
-                System.out.println("Reserva de " + hospede.getNomeHospede() + " para a data " + hospede.getData() + " realizado com sucesso!");
+                System.out.println("Reserva de " + hospede.getNome() + " para a data " + hospede.getData() + " realizado com sucesso!");
                 c.close();
             } else {
                 System.out.println("Erro ao cadastrar");

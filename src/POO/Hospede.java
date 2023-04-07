@@ -1,6 +1,6 @@
 package POO;
 
-public class Hospede {
+public class Hospede extends Pessoa {
 
     private String data;
     private String nomeHospede;
@@ -12,14 +12,6 @@ public class Hospede {
 
     public void setData(String data) {
         this.data = data;
-    }
-
-    public String getNomeHospede() {
-        return nomeHospede;
-    }
-
-    public void setNomeHospede(String nomeHospede) {
-        this.nomeHospede = nomeHospede;
     }
 
     public String getGaragem() {
