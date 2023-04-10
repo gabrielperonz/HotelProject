@@ -5,6 +5,7 @@ import POO.Quarto;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 public class Reserva {
@@ -39,14 +40,18 @@ public class Reserva {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        pessoa.setNome(nome);
-        System.out.println("Digite a data de nascimendo no formato dd-MM-yyyy:");
-        String dataString = scanner.nextLine();
-        DateTimeFormatter formatoEntrada = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        LocalDate data = LocalDate.parse(dataString, formatoEntrada);
-        DateTimeFormatter formatoSaida = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String dataFormatada = data.format(formatoSaida);
+
+        String dataFormatada = null;
+        while (dataFormatada == null) {
+            System.out.println("Digite a data de nascimento no formato dd/MM/yyyy:");
+            String dataString = scanner.nextLine();
+            dataFormatada = formatarData(dataString);
+            if (dataFormatada == null) {
+                System.out.println("Data invalida. Por favor, digite a data novamente.");
+            }
+        }
         pessoa.setDataNascimento(dataFormatada);
+        pessoa.setNome(nome);
         try {
             PreparedStatement stmt = c.prepareStatement("INSERT INTO database.pessoa (nomePessoa, dataNascimento) VALUE (?, ?)");
             stmt.setString(1, pessoa.getNome());
@@ -65,7 +70,6 @@ public class Reserva {
 
     public void criarReserva() {
         System.out.println("Digite o ID da pessoa que fará a reserva: ");
-
         try {
             String sql = "SELECT id, nomePessoa FROM pessoa";
             Statement stmt = c.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
@@ -78,7 +82,6 @@ public class Reserva {
                 System.out.println(i + ". " + pessoa + " (ID: " + id + ")");
                 i++;
             }
-
             Scanner scanner = new Scanner(System.in);
             System.out.print("");
             int option = scanner.nextInt() - 1;
@@ -92,14 +95,17 @@ public class Reserva {
             System.out.println("Erro ao conectar ao banco de dados: " + e.getMessage());
         }
 
-        System.out.println("Digite a data da reserva no formato dd-MM-yyyy:");
-        String dataString = scanner.nextLine();
-        DateTimeFormatter formatoEntrada = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        LocalDate data = LocalDate.parse(dataString, formatoEntrada);
-        DateTimeFormatter formatoSaida = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String dataFormatada = data.format(formatoSaida);
-        System.out.println(dataFormatada);
+        String dataFormatada = null;
+        while (dataFormatada == null) {
+            System.out.println("Digite a data da reserva no formato dd/MM/yyyy:");
+            String dataString = scanner.nextLine();
+            dataFormatada = formatarData(dataString);
+            if (dataFormatada == null) {
+                System.out.println("Data invalida. Por favor, digite a data novamente.");
+            }
+        }
         hospede.setData(dataFormatada);
+        System.out.println(dataFormatada);
 
         System.out.println("Selecione uma opção de cama:");
         System.out.println("1. Solteiro");
@@ -190,50 +196,65 @@ public class Reserva {
 
     public void checkOut() {
         LocalDate dataAtual = LocalDate.now();
-        DateTimeFormatter formatoData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        String dataFormatada = dataAtual.format(formatoData);
-            System.out.println("Para quem será o check-out");
+        System.out.println("Digite o ID da pessoa que fará o check-out:");
+        boolean idEncontrado = false;
+        do {
             try {
-                Statement stmt = c.createStatement();
-                String sql = "SELECT nomeHospede, dataReserva FROM hospede";
+                String sql = "SELECT idHospede, nomeHospede FROM hospede WHERE dataCheckout IS NULL";
+                Statement stmt = c.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                 ResultSet rs = stmt.executeQuery(sql);
+
                 int i = 1;
                 while (rs.next()) {
-                    String info1 = rs.getString("nomeHospede");
-                    String info2 = rs.getString("dataReserva");
-                    DateTimeFormatter formatoEntrada = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                    LocalDate data = LocalDate.parse(info2, formatoEntrada);
-                    DateTimeFormatter formatoSaida = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-                    System.out.println(i + ". " + info1 + " com a reserva para o dia " + formatoSaida.format(data));
+                    String pessoa = rs.getString("nomeHospede");
+                    int id = rs.getInt("idHospede");
+                    System.out.println(i + ". " + pessoa + " (ID: " + id + ")");
                     i++;
                 }
-                System.out.print("Digite o nome da opção desejada: ");
-                String nome = scanner.nextLine();
-                try {
-                    String sqlverificar = "SELECT * FROM hospede WHERE nomeHospede = ?";
-                    PreparedStatement verificar = c.prepareStatement(sqlverificar);
-                    verificar.setString(1, nome);
-                    ResultSet rsverificar = verificar.executeQuery();
-                    if (!rsverificar.next()) {
-                        System.out.println("Esse nome não está registrado.");
-                        System.exit(0);
-                    } else {
+                Scanner scanner = new Scanner(System.in);
+                System.out.print("");
+                int option = scanner.nextInt() - 1;
+
+                rs.beforeFirst();
+                while (rs.next()) {
+                    int id = rs.getInt("idHospede");
+                    if (option == id - 1) {
+                        String pessoaSelecionada = rs.getString("nomeHospede");
+                        System.out.println("Você selecionou: " + pessoaSelecionada);
+
                         PreparedStatement stmtout = c.prepareStatement("UPDATE hospede SET dataCheckout = ? WHERE nomeHospede = ?;");
                         stmtout.setDate(1, Date.valueOf(dataAtual));
-                        stmtout.setString(2, nome);
+                        stmtout.setString(2, pessoaSelecionada);
                         int linhas = stmtout.executeUpdate();
                         if (linhas > 0) {
-                            System.out.println("Checkout de " + nome + " realizado com sucesso!");
+                            System.out.println("Checkout de " + pessoaSelecionada + " realizado com sucesso!");
                             c.close();
                         } else {
                             System.out.println("Erro ao cadastrar");
                         }
+                        idEncontrado = true;
+                        break;
                     }
-                } catch (SQLException e) {
-                    e.printStackTrace();
                 }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
+                if (!idEncontrado) {
+                    System.out.println("ID invalido. Por favor, digite o ID novamente.");
+                }
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
             }
+        } while (!idEncontrado);
     }
+
+    public static String formatarData(String dataString) {
+        DateTimeFormatter formatoEntrada = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter formatoSaida = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        try {
+            LocalDate data = LocalDate.parse(dataString, formatoEntrada);
+            return data.format(formatoSaida);
+        } catch (DateTimeParseException e) {
+            return null;
+        }
+    }
+
 }
