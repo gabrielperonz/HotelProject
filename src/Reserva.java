@@ -8,12 +8,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class Reserva {
-    Pessoa pessoa = new Pessoa();
-    Hospede hospede = new Hospede();
-    Quarto quarto = new Quarto();
-
-    Scanner scanner = new Scanner(System.in);
-    Connection c;
+    private final Pessoa pessoa = new Pessoa();
+    private final Hospede hospede = new Hospede();
+    private final Quarto quarto = new Quarto();
+    private final Scanner scanner = new Scanner(System.in);
+    private final Connection c;
 
     {
         try {
