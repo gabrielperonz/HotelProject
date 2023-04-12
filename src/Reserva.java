@@ -9,12 +9,11 @@ import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 public class Reserva {
-    Pessoa pessoa = new Pessoa();
-    Hospede hospede = new Hospede();
-    Quarto quarto = new Quarto();
-
-    Scanner scanner = new Scanner(System.in);
-    Connection c;
+    private final Pessoa pessoa = new Pessoa();
+    private final Hospede hospede = new Hospede();
+    private final Quarto quarto = new Quarto();
+    private final Scanner scanner = new Scanner(System.in);
+    private final Connection c;
 
     {
         try {
@@ -248,7 +247,6 @@ public class Reserva {
     public static String formatarData(String dataString) {
         DateTimeFormatter formatoEntrada = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         DateTimeFormatter formatoSaida = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
         try {
             LocalDate data = LocalDate.parse(dataString, formatoEntrada);
             return data.format(formatoSaida);
