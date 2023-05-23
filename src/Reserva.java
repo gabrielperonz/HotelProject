@@ -45,6 +45,7 @@ public class Reserva {
             System.out.println("Digite a data de nascimento no formato dd/MM/yyyy:");
             String dataString = scanner.nextLine();
             dataFormatada = formatarData(dataString);
+//            LocalDate dataAtual = LocalDate.now();
             if (dataFormatada == null) {
                 System.out.println("Data invalida. Por favor, digite a data novamente.");
             }
@@ -106,72 +107,84 @@ public class Reserva {
         hospede.setData(dataFormatada);
         System.out.println(dataFormatada);
 
-        System.out.println("Selecione uma opção de cama:");
-        System.out.println("1. Solteiro");
-        System.out.println("2. Casal");
-        System.out.println("3. Queen");
-        int opcao = scanner.nextInt();
-        switch (opcao) {
-            case 1:
-                System.out.println("Você selecionou a opção 1");
-                quarto.setTipoCama("Solteiro");
-                break;
-            case 2:
-                System.out.println("Você selecionou a opção 2");
-                quarto.setTipoCama("Casal");
-                break;
-            case 3:
-                System.out.println("Você selecionou a opção 3");
-                quarto.setTipoCama("Queen");
-                break;
-            default:
-                System.out.println("Opção inválida!");
-                break;
-        }
-        System.out.println("Selecione uma opção de quarto:");
-        System.out.println("1. Suite Plus(Não aceita animais)");
-        System.out.println("2. Suite Grande(Aceita animais)");
-        System.out.println("3. Suite Master(Aceita animais)");
-        int opcao2 = scanner.nextInt();
+        int opcao;
+        do {
+            System.out.println("Selecione uma opção de cama:");
+            System.out.println("1. Solteiro");
+            System.out.println("2. Casal");
+            System.out.println("3. Queen");
+            opcao = scanner.nextInt();
 
-        switch (opcao2) {
-            case 1:
-                System.out.println("Você selecionou a opção 1");
-                quarto.setTipoQuarto("Suite Plus");
-                quarto.setAceitaAnimais(false);
-                break;
-            case 2:
-                System.out.println("Você selecionou a opção 2");
-                quarto.setTipoQuarto("Suite Grande");
-                quarto.setAceitaAnimais(true);
-                break;
-            case 3:
-                System.out.println("Você selecionou a opção 3");
-                quarto.setTipoQuarto("Suite Master");
-                quarto.setAceitaAnimais(true);
-                break;
-            default:
-                System.out.println("Opção inválida!");
-                break;
-        }
+            switch (opcao) {
+                case 1:
+                    System.out.println("Você selecionou a opção 1");
+                    quarto.setTipoCama("Solteiro");
+                    break;
+                case 2:
+                    System.out.println("Você selecionou a opção 2");
+                    quarto.setTipoCama("Casal");
+                    break;
+                case 3:
+                    System.out.println("Você selecionou a opção 3");
+                    quarto.setTipoCama("Queen");
+                    break;
+                default:
+                    System.out.println("Opção inválida! Por favor, selecione uma opção válida.");
+                    break;
+            }
+        } while (opcao < 1 || opcao > 3);
 
-        System.out.println("Ira precisar de garagem?");
-        System.out.println("1. Sim");
-        System.out.println("2. Não");
-        int opcao3 = scanner.nextInt();
-        switch (opcao3) {
-            case 1:
-                System.out.println("Você selecionou a opção 1");
-                hospede.setGaragem("Sim");
-                break;
-            case 2:
-                System.out.println("Você selecionou a opção 2");
-                hospede.setGaragem("Não");
-                break;
-            default:
-                System.out.println("Opção inválida!");
-                break;
-        }
+        int opcao2;
+        do {
+            System.out.println("Selecione uma opção de quarto:");
+            System.out.println("1. Suite Plus(Não aceita animais)");
+            System.out.println("2. Suite Grande(Aceita animais)");
+            System.out.println("3. Suite Master(Aceita animais)");
+           opcao2 = scanner.nextInt();
+
+            switch (opcao2) {
+                case 1:
+                    System.out.println("Você selecionou a opção 1");
+                    quarto.setTipoQuarto("Suite Plus");
+                    quarto.setAceitaAnimais(false);
+                    break;
+                case 2:
+                    System.out.println("Você selecionou a opção 2");
+                    quarto.setTipoQuarto("Suite Grande");
+                    quarto.setAceitaAnimais(true);
+                    break;
+                case 3:
+                    System.out.println("Você selecionou a opção 3");
+                    quarto.setTipoQuarto("Suite Master");
+                    quarto.setAceitaAnimais(true);
+                    break;
+                default:
+                    System.out.println("Opção inválida! Por favor, selecione uma opção válida.");
+                    break;
+            }
+        } while(opcao2 < 1 || opcao2 > 3);
+
+        int opcao3;
+        do {
+            System.out.println("Ira precisar de garagem?");
+            System.out.println("1. Sim");
+            System.out.println("2. Não");
+            opcao3 = scanner.nextInt();
+            switch (opcao3) {
+                case 1:
+                    System.out.println("Você selecionou a opção 1");
+                    hospede.setGaragem("Sim");
+                    break;
+                case 2:
+                    System.out.println("Você selecionou a opção 2");
+                    hospede.setGaragem("Não");
+                    break;
+                default:
+                    System.out.println("Opção inválida! Por favor, selecione uma opção válida.");
+                    break;
+            }
+        }while(opcao3 < 1 || opcao3 > 2);
+
         try {
             PreparedStatement stmt = c.prepareStatement("INSERT INTO database.hospede (nomeHospede, dataReserva, tipoQuarto, tipoCama, garagem, aceitaAnimais) VALUE (?, ?, ?, ?, ?, ?)");
             stmt.setString(1, hospede.getNome());
