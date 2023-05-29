@@ -1,10 +1,14 @@
+package Funcoes;
+
 import java.util.Scanner;
 
 public class Options {
 
     public void optionsHotel() {
-        Reserva reserva = new Reserva();
         Scanner scanner = new Scanner(System.in);
+        Reserva reserva = new Reserva();
+        CheckOut checkOut = new CheckOut();
+        CheckIn checkIn = new CheckIn();
 
         System.out.println("Selecione uma opção:");
         System.out.println("1. Check-in");
@@ -15,11 +19,11 @@ public class Options {
         switch (opcao) {
             case 1:
                 System.out.println("Você selecionou a opção 1");
-                reserva.checkIn();
+                checkIn.checkIn();
                 break;
             case 2:
                 System.out.println("Você selecionou a opção 2");
-                reserva.checkOut();
+                checkOut.checkOut();
                 break;
             case 3:
                 System.out.println("Você selecionou a opção 3");
