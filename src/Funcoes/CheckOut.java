@@ -44,10 +44,10 @@ public class CheckOut {
                         stmtout.setInt(2, id);
                         int linhas = stmtout.executeUpdate();
                         if (linhas > 0) {
-                            System.out.println("Checkout de " + pessoaSelecionada + " realizado com sucesso!");
+                            System.out.println("Check-out de " + pessoaSelecionada + " realizado com sucesso!");
                             conexao.closeConnection();
                         } else {
-                            System.out.println("Erro ao cadastrar");
+                            System.out.println("Erro ao fazer Check-Out");
                             conexao.closeConnection();
                         }
                         idEncontrado = true;

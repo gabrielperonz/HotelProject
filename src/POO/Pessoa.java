@@ -4,6 +4,7 @@ public class Pessoa {
 
     private String nome;
     private String dataNascimento;
+    private String Cpf;
 
 
     public String getNome() {
@@ -21,4 +22,12 @@ public class Pessoa {
     public void setDataNascimento(String dataNascimento) {
         this.dataNascimento = dataNascimento;
     }
+
+    public String getCpf() {
+        return Cpf;
+    }
+    public void setCpf(String cpf) {
+        Cpf = cpf;
+    }
+
 }

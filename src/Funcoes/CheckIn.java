@@ -1,61 +1,64 @@
 package Funcoes;
 
-import POO.Pessoa;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDate;
 import java.util.Scanner;
 
 public class CheckIn {
-    private final Pessoa pessoa = new Pessoa();
-    private final Scanner scanner = new Scanner(System.in);
+
     private final Conexao conexao = new Conexao();
+
     public void checkIn() {
         conexao.connection();
         Connection c = conexao.getConnection();
-        System.out.println("Qual o nome completo da pessoa?");
-        String nome = scanner.nextLine();
-        String sql = "SELECT * FROM pessoa WHERE nomePessoa = ?";
-        try {
-            PreparedStatement stmt = c.prepareStatement(sql);
-            stmt.setString(1, nome);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                System.out.println("Esse nome já está registrado.");
-                System.exit(0);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        LocalDate dataAtual = LocalDate.now();
+        Scanner scanner = new Scanner(System.in);
+        boolean idEncontrado = false;
+        do {
+            try {
+                String sql = "SELECT idHospede, nomeHospede FROM hospede WHERE dataCheckIn IS NULL";
+                Statement stmt = c.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                ResultSet rs = stmt.executeQuery(sql);
 
-        String dataFormatada = null;
-        while (dataFormatada == null) {
-            System.out.println("Digite a data de nascimento no formato dd/MM/yyyy:");
-            String dataString = scanner.nextLine();
-            dataFormatada = FormatarData.formatarData(dataString);
-            if (dataFormatada == null) {
-                System.out.println("Data invalida. Por favor, digite a data novamente.");
+                int i = 1;
+                while (rs.next()) {
+                    String pessoa = rs.getString("nomeHospede");
+                    int id = rs.getInt("idHospede");
+                    System.out.println(i + ". " + pessoa + " (ID: " + id + ")");
+                    i++;
+                }
+
+                int option = scanner.nextInt() - 1;
+                System.out.print("");
+
+                rs.beforeFirst();
+                while (rs.next()) {
+                    int id = rs.getInt("idHospede");
+                    if (option == id - 1) {
+                        String pessoaSelecionada = rs.getString("nomeHospede");
+                        System.out.println("Você selecionou: " + pessoaSelecionada);
+
+                        PreparedStatement stmtout = c.prepareStatement("UPDATE hospede SET dataCheckIn = ? WHERE idHospede = ?;");
+                        stmtout.setDate(1, Date.valueOf(dataAtual));
+                        stmtout.setInt(2, id);
+                        int linhas = stmtout.executeUpdate();
+                        if (linhas > 0) {
+                            System.out.println("Check-In de " + pessoaSelecionada + " realizado com sucesso!");
+                            conexao.closeConnection();
+                        } else {
+                            System.out.println("Erro ao fazer Check-In");
+                            conexao.closeConnection();
+                        }
+                        idEncontrado = true;
+                        break;
+                    }
+                }
+                if (!idEncontrado) {
+                    System.out.println("ID invalido. Por favor, digite o ID novamente.");
+                }
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
             }
-        }
-        pessoa.setDataNascimento(dataFormatada);
-        pessoa.setNome(nome);
-        try {
-            PreparedStatement stmt = c.prepareStatement("INSERT INTO database.pessoa (nomePessoa, dataNascimento) VALUE (?, ?)");
-            stmt.setString(1, pessoa.getNome());
-            stmt.setString(2, pessoa.getDataNascimento());
-            int linhas = stmt.executeUpdate();
-            if (linhas > 0) {
-                System.out.println("Check-in de " + pessoa.getNome() + " data de nascimento " + pessoa.getDataNascimento() + " realizado com sucesso!");
-                conexao.closeConnection();
-            } else {
-                System.out.println("Erro ao cadastrar");
-                conexao.closeConnection();
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        } while (!idEncontrado);
     }
-
 }

@@ -38,6 +38,7 @@ public class Main {
                         " dataReserva DATE, " +
                         " garagem VARCHAR(20), " +
                         " tipoQuarto VARCHAR(45), " +
+                        " servicoDeQuarto TINYINT(4), " +
                         " tipoCama VARCHAR(45), " +
                         " aceitaAnimais TINYINT(4), " +
                         " dataCheckout DATE)";

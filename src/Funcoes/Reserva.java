@@ -113,11 +113,33 @@ public class Reserva {
 
         int opcao3;
         do {
-            System.out.println("Ira precisar de garagem?");
+            System.out.println("Precisa de serviço de quarto?");
             System.out.println("1. Sim");
             System.out.println("2. Não");
             opcao3 = scanner.nextInt();
+
             switch (opcao3) {
+                case 1:
+                    System.out.println("Você selecionou a opção 1");
+                    quarto.setServicoDeQuarto(true);
+                    break;
+                case 2:
+                    System.out.println("Você selecionou a opção 2");
+                    quarto.setServicoDeQuarto(false);
+                    break;
+                default:
+                    System.out.println("Opção inválida! Por favor, selecione uma opção válida.");
+                    break;
+            }
+        } while(opcao3 < 1 || opcao3 > 3);
+
+        int opcao4;
+        do {
+            System.out.println("Ira precisar de garagem?");
+            System.out.println("1. Sim");
+            System.out.println("2. Não");
+            opcao4 = scanner.nextInt();
+            switch (opcao4) {
                 case 1:
                     System.out.println("Você selecionou a opção 1");
                     hospede.setGaragem("Sim");
@@ -130,16 +152,17 @@ public class Reserva {
                     System.out.println("Opção inválida! Por favor, selecione uma opção válida.");
                     break;
             }
-        }while(opcao3 < 1 || opcao3 > 2);
+        }while(opcao4 < 1 || opcao4 > 2);
 
         try {
-            PreparedStatement stmt = c.prepareStatement("INSERT INTO database.hospede (nomeHospede, dataReserva, tipoQuarto, tipoCama, garagem, aceitaAnimais) VALUE (?, ?, ?, ?, ?, ?)");
+            PreparedStatement stmt = c.prepareStatement("INSERT INTO database.hospede (nomeHospede, dataReserva, tipoQuarto, servicoDeQuarto, tipoCama, garagem, aceitaAnimais) VALUE (? ,?, ?, ?, ?, ?, ?)");
             stmt.setString(1, hospede.getNome());
             stmt.setString(2, hospede.getData());
             stmt.setString(3, quarto.getTipoQuarto());
-            stmt.setString(4, quarto.getTipoCama());
-            stmt.setString(5, hospede.getGaragem());
-            stmt.setBoolean(6, quarto.isAceitaAnimais());
+            stmt.setBoolean(4, quarto.getServicoDeQuarto());
+            stmt.setString(5, quarto.getTipoCama());
+            stmt.setString(6, hospede.getGaragem());
+            stmt.setBoolean(7, quarto.isAceitaAnimais());
             int linhas = stmt.executeUpdate();
             if (linhas > 0) {
                 System.out.println("Funções.Reserva de " + hospede.getNome() + " para a data " + hospede.getData() + " realizado com sucesso!");
