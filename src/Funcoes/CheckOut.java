@@ -39,7 +39,7 @@ public class CheckOut {
                         String pessoaSelecionada = rs.getString("nomeHospede");
                         System.out.println("Você selecionou: " + pessoaSelecionada);
 
-                        PreparedStatement stmtout = c.prepareStatement("UPDATE hospede SET dataCheckout = ? WHERE idHospede = ?;");
+                        PreparedStatement stmtout = c.prepareStatement("UPDATE hospede SET dataCheckOut = ? WHERE idHospede = ?;");
                         stmtout.setDate(1, Date.valueOf(dataAtual));
                         stmtout.setInt(2, id);
                         int linhas = stmtout.executeUpdate();

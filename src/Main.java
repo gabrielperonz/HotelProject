@@ -23,6 +23,7 @@ public class Main {
                 String sql1 = "CREATE TABLE pessoa " +
                         " (id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT, " +
                         " nomePessoa VARCHAR(255), " +
+                        " cpf VARCHAR(11), " +
                         " dataNascimento DATE)";
                 try (Statement stmt1 = conn.createStatement()) {
                     stmt1.executeUpdate(sql1);
@@ -41,7 +42,8 @@ public class Main {
                         " servicoDeQuarto TINYINT(4), " +
                         " tipoCama VARCHAR(45), " +
                         " aceitaAnimais TINYINT(4), " +
-                        " dataCheckout DATE)";
+                        " dataCheckIn DATE, " +
+                        " dataCheckOut DATE)";
                 try (Statement stmt2 = conn.createStatement()) {
                     stmt2.executeUpdate(sql2);
                     System.out.println("Tabela hospede criada com sucesso");
