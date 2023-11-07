@@ -38,7 +38,6 @@ public class Cadastro {
                 System.out.println("Esse nome já está registrado.");
                 System.exit(0);
             }
-            // Configura o nome da pessoa (presumindo que `pessoa` é um objeto previamente declarado)
             pessoa.setNome(nome);
         } catch (SQLException e) {
             e.printStackTrace();
